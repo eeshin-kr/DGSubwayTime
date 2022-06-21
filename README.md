@@ -7,6 +7,10 @@
 
 ![메인 창 사진](https://user-images.githubusercontent.com/60684821/174765424-98a0ffcf-2ba3-44b0-83ee-74f0521a60a5.jpg)
 
+시간표 창
+
+![Annotation 2022-06-21 181858](https://user-images.githubusercontent.com/60684821/174765431-6ad8fdf2-3fb9-4aa2-9192-52258a31a5f1.jpg)
+![Annotation 2022-06-21 181911](https://user-images.githubusercontent.com/60684821/174765435-0513943b-f2ba-411a-bdad-88ebacf487a8.jpg)
 
 
 ## 요구사항
@@ -33,3 +37,5 @@
 
 ## 실행방법
 Procesing, Scene 폴더 내의 모든 파일, Launch.pyw 파일을 받은 후 Launch.pyw를 실행합니다.
+
+메인 창을 더블클릭하여 시간표를 열 수 있습니다.
