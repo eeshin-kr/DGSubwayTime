@@ -36,6 +36,6 @@
   * 예) 2호선 문양 -> 영남대 기차의 경우 문양 역에서 영남대역 방면으로 표시되는 시각은 열차의 출발 시각입니다.
 
 ## 실행방법
-Procesing, Scene 폴더 내의 모든 파일, Launch.pyw 파일을 받은 후 Launch.pyw를 실행합니다.
+Processing, Scene 폴더 내의 모든 파일, Launch.pyw 파일을 받은 후 Launch.pyw를 실행합니다.
 
 메인 창을 더블클릭하여 시간표를 열 수 있습니다.
