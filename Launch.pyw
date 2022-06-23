@@ -7,7 +7,7 @@
 #####
 
 
-__version__ = "0.6a"
+__version__ = "0.7"
 
 from Scene import MainWindow
 from Scene import HelpWindow

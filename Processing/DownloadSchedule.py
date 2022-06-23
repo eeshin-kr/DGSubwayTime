@@ -33,6 +33,10 @@ def GetDBD(LineNum = 2):
     except TimeoutError as e:
         print("타임아웃 에러 발생")
         return -1
+    except URLError as e:
+        print("URL 에러 발생")
+        return -1
+              
         
 
 
