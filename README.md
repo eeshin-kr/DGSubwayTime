@@ -37,5 +37,3 @@
 
 ## 실행방법
 Processing, Scene 폴더 내의 모든 파일, Launch.pyw 파일을 받은 후 Launch.pyw를 실행합니다.
-
-메인 창을 더블클릭하여 시간표를 열 수 있습니다.
