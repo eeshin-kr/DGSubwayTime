@@ -44,48 +44,51 @@ def RefreshTime():
     isLastTrain 함수를 통해 해당 시간이 막차인지 확인하고 글자를 지정된 색상으로 변경합니다.
     '''
 
-    Tstr0.set(TimeElapseString(CurrentTrainElapsedUP))
-    Tstr2.set(TimeElapseString(NextTrainElapsedUP))
+    
+    Tstr1.set(CurrentTrainUP[:-3]) #초는 제외하고 표시
+    Tstr3.set(NextTrainUP[:-3])
+    
     
     if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[0]) :
-        Tstr1.set(CurrentTrainUP[:-3] + "(막차)") #초는 제외하고 표시
+        Tstr0.set(TimeElapseString(CurrentTrainElapsedUP) + "\n(막차)")
         TLabelTOPU0.configure(fg="red")
         TLabelTOPD0.configure(fg="red")
         
     else:
-        Tstr1.set(CurrentTrainUP[:-3])
+        Tstr0.set(TimeElapseString(CurrentTrainElapsedUP))
         TLabelTOPU0.configure(fg="black")
         TLabelTOPD0.configure(fg="black")
 
     if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[1]):
-        Tstr3.set(NextTrainUP[:-3] + "(막차)")
+        Tstr2.set(TimeElapseString(NextTrainElapsedUP) + "\n(막차)")
         TLabelTOPU1.configure(fg="red")
         TLabelTOPD1.configure(fg="red")
         
     else:
-        Tstr3.set(NextTrainUP[:-3])
+        Tstr2.set(TimeElapseString(NextTrainElapsedUP))
         TLabelTOPU1.configure(fg="black")
         TLabelTOPD1.configure(fg="black")
         
-        
-    Tstr4.set(TimeElapseString(CurrentTrainElapsedDOWN))
-    Tstr6.set(TimeElapseString(NextTrainElapsedDOWN))
+
+    Tstr5.set(CurrentTrainDOWN[:-3]) #초는 제외하고 표시
+    Tstr7.set(NextTrainDOWN[:-3])
+    
 
     if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[0]):
-        Tstr5.set(CurrentTrainDOWN[:-3] + "(막차)") #초는 제외하고 표시
+        Tstr4.set(TimeElapseString(CurrentTrainElapsedDOWN) + "\n(막차)")
         TLabelBOTU0.configure(fg="red")
         TLabelBOTD0.configure(fg="red")
     else:
-        Tstr5.set(CurrentTrainDOWN[:-3])
+        Tstr4.set(TimeElapseString(CurrentTrainElapsedDOWN))
         TLabelBOTU0.configure(fg="black")
         TLabelBOTD0.configure(fg="black")
 
     if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[1]):        
-        Tstr7.set(NextTrainDOWN[:-3] + "(막차)")
+        Tstr6.set(TimeElapseString(NextTrainElapsedDOWN) + "\n(막차)")
         TLabelBOTU1.configure(fg="red")
         TLabelBOTD1.configure(fg="red")
     else:
-        Tstr7.set(NextTrainDOWN[:-3])
+        Tstr6.set(TimeElapseString(NextTrainElapsedDOWN))
         TLabelBOTU1.configure(fg="black")
         TLabelBOTD1.configure(fg="black")
         
@@ -236,7 +239,7 @@ Tkinter를 이용하여 메인 창을 만들기 위한 구문입니다. 마스�
 win = tk.Tk()
 win.title(f'열차 시간 알리미')
 win.geometry(f'-{default_x_po}-{default_y_po}')
-win.minsize(230,150)
+#win.minsize(230,150)
 win.resizable(False, False)
 win.attributes("-topmost", 1)
 
@@ -266,28 +269,29 @@ HolidayRadioOption.set(HolidaySelection)
 
 menubar = tk.Menu(master = win)
 
-menu_line = tk.Menu(menubar, tearoff=0)
+menu_settings = tk.Menu(menubar, tearoff=0)
+
+menu_line = tk.Menu(menu_settings, tearoff=0)
 for LineOption in LineList:
     menu_line.add_radiobutton(label=f'{LineOption} 호선', variable=LineRadioOption, value = LineOption, command = lambda: ChangeLine(LineRadioOption.get()))
 
-menu_station = tk.Menu(menubar, tearoff=0)
+menu_station = tk.Menu(menu_settings, tearoff=0)
 for StationOption in StationList:
     menu_station.add_radiobutton(label=StationOption, variable=StationRadioOption, value = StationOption, command=lambda: ChangeStation(StationRadioOption.get()))
 
-'''  휴일 메뉴 제거
 menu_holiday = tk.Menu(menubar, tearoff=0)
 for HolidayOption in HolidayOptionList:
     menu_holiday.add_radiobutton(label=HolidayOption, variable=HolidayRadioOption, value = HolidayOption, command = lambda: ChangeHoliday(HolidayRadioOption.get()))
-'''
+
 
 menubar.add_command(label="시간표 검색", command = lambda: TimeTableWindow.TimeTableWindowOpen(MasterWindow = win,
                                                                             StationSelection = StationSelection,
                                                                             HolidaySelection=HolidaySelection) )
-menubar.add_cascade(label="호선 설정", menu = menu_line)
-menubar.add_cascade(label="역 설정", menu = menu_station)
-''' 휴일 메뉴 제거
-menubar.add_cascade(label="휴일 설정", menu = menu_holiday)
-'''
+
+menu_settings.add_cascade(label="호선 설정", menu = menu_line)
+menu_settings.add_cascade(label="역 설정", menu = menu_station)
+menu_settings.add_cascade(label="휴일 설정", menu = menu_holiday)
+menubar.add_cascade(label="설정", menu = menu_settings)
 menubar.add_command(label="?", command = lambda: HelpWindow.HelpOpen(MasterWindow=win, Line=int(LineSelection)))
 win.config(menu=menubar)
 
