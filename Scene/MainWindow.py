@@ -30,6 +30,7 @@ def RefreshTime():
     
     CurrentTrainUP = TmpList[0]
     CurrentTrainElapsedUP = csvread.TimeDiffInt(TmpList[0])
+    
     NextTrainUP = TmpList[1]
     NextTrainElapsedUP = csvread.TimeDiffInt(TmpList[1])
 
@@ -37,19 +38,59 @@ def RefreshTime():
     CurrentTrainElapsedDOWN = csvread.TimeDiffInt(TmpList2[0])
     NextTrainDOWN = TmpList2[1]
     NextTrainElapsedDOWN = csvread.TimeDiffInt(TmpList2[1])
-
-
-    Tstr0.set(CurrentTrainUP[:-3]) #초는 제외하고 표시
-    Tstr2.set(NextTrainUP[:-3])
-
-    Tstr1.set(TimeElapseString(CurrentTrainElapsedUP))
-    Tstr3.set(TimeElapseString(NextTrainElapsedUP))
     
-    Tstr4.set(CurrentTrainDOWN[:-3]) #초는 제외하고 표시
-    Tstr6.set(NextTrainDOWN[:-3])
+    '''
+    메인 창에 시간표 정보를 나타내기 위한 함수입니다.
+    isLastTrain 함수를 통해 해당 시간이 막차인지 확인하고 글자를 지정된 색상으로 변경합니다.
+    '''
 
-    Tstr5.set(TimeElapseString(CurrentTrainElapsedDOWN))
-    Tstr7.set(TimeElapseString(NextTrainElapsedDOWN))
+    Tstr0.set(TimeElapseString(CurrentTrainElapsedUP))
+    Tstr2.set(TimeElapseString(NextTrainElapsedUP))
+    
+    if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[0]) :
+        Tstr1.set(CurrentTrainUP[:-3] + "(막차)") #초는 제외하고 표시
+        TLabelTOPU0.configure(fg="red")
+        TLabelTOPD0.configure(fg="red")
+        
+    else:
+        Tstr1.set(CurrentTrainUP[:-3])
+        TLabelTOPU0.configure(fg="black")
+        TLabelTOPD0.configure(fg="black")
+
+    if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[1]):
+        Tstr3.set(NextTrainUP[:-3] + "(막차)")
+        TLabelTOPU1.configure(fg="red")
+        TLabelTOPD1.configure(fg="red")
+        
+    else:
+        Tstr3.set(NextTrainUP[:-3])
+        TLabelTOPU1.configure(fg="black")
+        TLabelTOPD1.configure(fg="black")
+        
+        
+    Tstr4.set(TimeElapseString(CurrentTrainElapsedDOWN))
+    Tstr6.set(TimeElapseString(NextTrainElapsedDOWN))
+
+    if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[0]):
+        Tstr5.set(CurrentTrainDOWN[:-3] + "(막차)") #초는 제외하고 표시
+        TLabelBOTU0.configure(fg="red")
+        TLabelBOTD0.configure(fg="red")
+    else:
+        Tstr5.set(CurrentTrainDOWN[:-3])
+        TLabelBOTU0.configure(fg="black")
+        TLabelBOTD0.configure(fg="black")
+
+    if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[1]):        
+        Tstr7.set(NextTrainDOWN[:-3] + "(막차)")
+        TLabelBOTU1.configure(fg="red")
+        TLabelBOTD1.configure(fg="red")
+    else:
+        Tstr7.set(NextTrainDOWN[:-3])
+        TLabelBOTU1.configure(fg="black")
+        TLabelBOTD1.configure(fg="black")
+        
+
+    
 
     UpdateFrameLabel() #라벨 업데이트 포함
     win.after(1000, RefreshTime)
@@ -131,7 +172,20 @@ def UpdateStationMenu():
     for StationOption in StationList:
       menu_station.add_radiobutton(label=StationOption, variable=StationRadioOption, value = StationOption, command=lambda: ChangeStation(StationRadioOption.get()))
 
-    StationRadioOption.set(StationSelection)
+    StationRadioOption.set(StationSelection)    
+
+def ToggleLabelVisibility():
+    if len(TFrameTOP0.pack_slaves()) > 1:
+        TLabelTOPD0.pack_forget()
+        TLabelTOPD1.pack_forget()
+        TLabelBOTD0.pack_forget()
+        TLabelBOTD1.pack_forget()
+    else:
+        TLabelTOPD0.pack()
+        TLabelTOPD1.pack()
+        TLabelBOTD0.pack()
+        TLabelBOTD1.pack()
+    
 
 def StartUpMain():
     '''
@@ -186,10 +240,15 @@ win.minsize(230,150)
 win.resizable(False, False)
 win.attributes("-topmost", 1)
 
+##메인 창을 한 번 클릭시 도착 예정 시각 정보를 표시하기 위한 구문입니다.
+win.bind("<Button-1>", lambda e: ToggleLabelVisibility())
+
+'''
 ##메인 창 더블 클릭 시 시간표 창을 열기위한 구문입니다.
 win.bind("<Double-Button-1>", lambda e: TimeTableWindow.TimeTableWindowOpen(MasterWindow = win,
                                                                             StationSelection = StationSelection,
                                                                             HolidaySelection=HolidaySelection ))
+'''
 
 ##메인 창 종료시 설정을 저장하기위한 구문입니다.
 win.protocol("WM_DELETE_WINDOW", lambda : [SettingsManager.StationSave(line = LineSelection, station=StationSelection), win.destroy()])
@@ -215,13 +274,20 @@ menu_station = tk.Menu(menubar, tearoff=0)
 for StationOption in StationList:
     menu_station.add_radiobutton(label=StationOption, variable=StationRadioOption, value = StationOption, command=lambda: ChangeStation(StationRadioOption.get()))
 
+'''  휴일 메뉴 제거
 menu_holiday = tk.Menu(menubar, tearoff=0)
 for HolidayOption in HolidayOptionList:
     menu_holiday.add_radiobutton(label=HolidayOption, variable=HolidayRadioOption, value = HolidayOption, command = lambda: ChangeHoliday(HolidayRadioOption.get()))
-    
+'''
+
+menubar.add_command(label="시간표 검색", command = lambda: TimeTableWindow.TimeTableWindowOpen(MasterWindow = win,
+                                                                            StationSelection = StationSelection,
+                                                                            HolidaySelection=HolidaySelection) )
 menubar.add_cascade(label="호선 설정", menu = menu_line)
 menubar.add_cascade(label="역 설정", menu = menu_station)
+''' 휴일 메뉴 제거
 menubar.add_cascade(label="휴일 설정", menu = menu_holiday)
+'''
 menubar.add_command(label="?", command = lambda: HelpWindow.HelpOpen(MasterWindow=win, Line=int(LineSelection)))
 win.config(menu=menubar)
 
@@ -269,22 +335,22 @@ Tstr7.set("-")
 TLabelTOPU0 = tk.Label(master=TFrameTOP0, textvariable=Tstr0)
 TLabelTOPU0.pack()
 TLabelTOPD0 = tk.Label(master=TFrameTOP0, textvariable=Tstr1)
-TLabelTOPD0.pack()
+#TLabelTOPD0.pack()
 
 TLabelTOPU1 = tk.Label(master=TFrameTOP1, textvariable=Tstr2)
 TLabelTOPU1.pack()
 TLabelTOPD1 = tk.Label(master=TFrameTOP1, textvariable=Tstr3)
-TLabelTOPD1.pack()
+#TLabelTOPD1.pack()
 
 TLabelBOTU0 = tk.Label(master=TFrameBOT0, textvariable=Tstr4)
 TLabelBOTU0.pack()
 TLabelBOTD0 = tk.Label(master=TFrameBOT0, textvariable=Tstr5)
-TLabelBOTD0.pack()
+#TLabelBOTD0.pack()
 
 TLabelBOTU1 = tk.Label(master=TFrameBOT1, textvariable=Tstr6)
 TLabelBOTU1.pack()
 TLabelBOTD1 = tk.Label(master=TFrameBOT1, textvariable=Tstr7)
-TLabelBOTD1.pack()
+#TLabelBOTD1.pack()
 
 ##UI 구성 끝
 

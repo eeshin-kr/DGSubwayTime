@@ -54,7 +54,7 @@ def tstrlist2int(strlist):
 ##열차 시각과 남은 시간 출력하는 불러오는 함수
 def TimeTableSearchT(week="평일",
                     direction="상", station="용산",
-                    adtype="도착", SearchTime=''):
+                    adtype="도착", SearchTime='', FillFirst=True):
     
     tlist = timetable_list
     StationList = GetStationList()
@@ -80,13 +80,16 @@ def TimeTableSearchT(week="평일",
                     timetableinfo = tstrlist2int(colline.split(":"))
                     if SearchTInt < timetableinfo:
                         return colline
-                    
-            for colline in line: ##이후의 시간 대에 편성 없을 경우 예외 경우로 사용
-                if(":" in colline):
-                    #timetableinfo = tstrlist2int(colline.split(":"))
-                    #nowtdiff = timetableinfo + (24*3600) - SearchTInt
-                    return colline   
-             
+
+            if FillFirst == True:
+                
+                for colline in line: ##이후의 시간 대에 편성 없을 경우 예외 경우로 사용
+                    if(":" in colline):
+                        #timetableinfo = tstrlist2int(colline.split(":"))
+                        #nowtdiff = timetableinfo + (24*3600) - SearchTInt
+                        return colline
+            else: return None
+           
     raise NameError('시간표를 검색하는데 실패했습니다. 마지막 선택 역:' + station)
 
 ##열차 시각과 남은시각, 다음 열차 출력하는 함수
@@ -219,6 +222,12 @@ def GetTimeTable2 (week="평일", direction="상", adtype="도착"):
 
     return TrainNumDict
 
+def isLastTrain(week="평일",direction="상", station="용산", adtype="도착", Time=None):
+    
+    if TimeTableSearchT(week, direction, station, adtype, SearchTime = Time, FillFirst=False) == None:
+        return True
+    else:
+        return False
        
 def GetHolidayOptionList(): ##추후 휴일 옵션 항목 가져오는 함수 만들 예정
     pass
