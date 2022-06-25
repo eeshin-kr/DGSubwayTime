@@ -33,7 +33,7 @@ def GetDBD(LineNum = 2):
     except TimeoutError as e:
         print("타임아웃 에러 발생")
         return -1
-    except URLError as e:
+    except error.URLError as e:
         print("URL 에러 발생")
         return -1
               
@@ -45,30 +45,35 @@ def DownloadFromJson(LineNum = 2):
     '''
     JSON 파일로 부터 시간표 파일을 받아오기 위한 함수입니다.
     '''
-    jsonURL = JSON_CASE[LineNum]
-    
-    jsonURLOpen = request.urlopen(url=jsonURL)
-    jsonURLData = jsonURLOpen.read()
-    Encoding = jsonURLOpen.info().get_content_charset()
-    jsonData = json.loads(jsonURLData.decode(Encoding))
+    try:
+        jsonURL = JSON_CASE[LineNum]
+        jsonURLOpen = request.urlopen(url=jsonURL)
+        jsonURLData = jsonURLOpen.read()
+        Encoding = jsonURLOpen.info().get_content_charset()
+        jsonData = json.loads(jsonURLData.decode(Encoding))
 
-    DistributionData = jsonData['distribution']
-    DistributionDict = dict(DistributionData[0])
-    CSVDownloadURL = DistributionDict['contentUrl']
-    print("다운로드 중")
-    CSVDownloadOpen = request.urlopen(url=CSVDownloadURL)
-    CSVDownloadData = CSVDownloadOpen.read()
-    if LineNum == 2 :
-        CSVDownloadData = CSVFix(CSVDownloadData)
-    #파일 이름 가져오기
-    CSVDownloadName_raw = CSVDownloadOpen.headers.get_filename()
-    CSVDownloadName = CSVDownloadName_raw.encode('ISO-8859-1').decode('utf-8') #파일 이름이 ISO-8859-1로 인코딩 되어 있음...
-    print("다운로드 완료")
-    #파일 저장하기
-    with open(f'./{CSVDownloadName}', mode="wb") as file:
-        file.write(CSVDownloadData)
-    #설정파일에 파일 수정일 및 파일명 저장
-    SettingsManager.DatabaseInfoSave(line = LineNum, date = GetDBD(LineNum), filename=CSVDownloadName)
+        DistributionData = jsonData['distribution']
+        DistributionDict = dict(DistributionData[0])
+        CSVDownloadURL = DistributionDict['contentUrl']
+        print("다운로드 중")
+        CSVDownloadOpen = request.urlopen(url=CSVDownloadURL)
+        CSVDownloadData = CSVDownloadOpen.read()
+        if LineNum == 2 :
+            CSVDownloadData = CSVFix(CSVDownloadData)
+        #파일 이름 가져오기
+        CSVDownloadName_raw = CSVDownloadOpen.headers.get_filename()
+        CSVDownloadName = CSVDownloadName_raw.encode('ISO-8859-1').decode('utf-8') #파일 이름이 ISO-8859-1로 인코딩 되어 있음...
+        print("다운로드 완료")
+        #파일 저장하기
+        with open(f'./{CSVDownloadName}', mode="wb") as file:
+            file.write(CSVDownloadData)
+        #설정파일에 파일 수정일 및 파일명 저장
+        SettingsManager.DatabaseInfoSave(line = LineNum, date = GetDBD(LineNum), filename=CSVDownloadName)
+        return 0
+
+    except (TimeoutError, error.URLError) as e:
+        return e
+
     
     
 ##2호선에 신매역이 신내역으로 기록, 이름 수정함

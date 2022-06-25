@@ -179,9 +179,9 @@ def UpdateTimeTableTopWindow(THolidaySelection = None,
     TempHour = ["",""] #리스트 박스 내 시간대 별로 나누기 위함
     for TimeTableContent in TimeTableContentLEFT:
         
-        if TempHour[0] != TimeTableContent[:2] :
-            TListBoxLEFT.insert(TListBoxLEFT.size(), f'*****{TimeTableContent[:2]}시*****')
-            TempHour[0] = TimeTableContent[:2]
+        if TempHour[0] != TimeTableContent.split(":")[0] :
+            TListBoxLEFT.insert(TListBoxLEFT.size(), f'*****{TimeTableContent.split(":")[0]}시*****')
+            TempHour[0] = TimeTableContent.split(":")[0]
            
 
         if (THolidaySelection == HolidaySelection and
@@ -196,9 +196,9 @@ def UpdateTimeTableTopWindow(THolidaySelection = None,
 
             
     for TimeTableContent in TimeTableContentRIGHT:
-        if TempHour[1] != TimeTableContent[:2] :
-            TListBoxRIGHT.insert(TListBoxRIGHT.size(), f'*****{TimeTableContent[:2]}시*****')
-            TempHour[1] = TimeTableContent[:2]
+        if TempHour[1] != TimeTableContent.split(":")[0] :
+            TListBoxRIGHT.insert(TListBoxRIGHT.size(), f'*****{TimeTableContent.split(":")[0]}시*****')
+            TempHour[1] = TimeTableContent.split(":")[0]
             
         if (THolidaySelection == HolidaySelection and
             TStationSelection == StationSelection and
@@ -212,7 +212,17 @@ def UpdateTimeTableTopWindow(THolidaySelection = None,
 
     if len(TimeTableContentLEFT) == 0: ##시간표를 제대로 불러오지 못했을 경우
         TListBoxLEFT.insert(0, "역 명을 확인하십시오")
-
+    '''
+    막차의 경우 행선지 표시 추가
+    '''
+    LastTimeLeft = TListBoxLEFT.get('end')   + f' ({csvread.GetDestination(week=THolidaySelection, station =TStationSelection, direction="상")}행)'
+    LastTimeRight = TListBoxRIGHT.get('end') + f' ({csvread.GetDestination(week=THolidaySelection, station =TStationSelection, direction="하")}행)'
+    TListBoxLEFT.delete('end')
+    TListBoxRIGHT.delete('end')
+    TListBoxLEFT.insert('end', LastTimeLeft)
+    TListBoxRIGHT.insert('end', LastTimeRight)
+    
+                        
     #편리함을 위해 리스트박스에서 이번 열차 선택
     TListBoxLEFT.see(ScrollPatch[0])
     TListBoxRIGHT.see(ScrollPatch[1])
@@ -276,9 +286,9 @@ def UpdateNoteBookSize(Toplevel = None, Notebook=None, event=None):
     사용의 편의성을 위해 탭 선택에 따라서 다른 크기를 설정합니다.
     '''
     #DefaultSize = {0: "350x350", 1: "500x350"}
-    DefaultMinSize = {0: [350, 350], 1: [500, 350]}
-    DefaultMaxSize = {0: [350, False], 1: [False, False]}
-    DefaultReSizAble = {0: [False, True], 1: [True, True]}
+    DefaultMinSize = {0: [400, 350], 1: [500, 350]}
+    DefaultMaxSize = {0: [False, False], 1: [False, False]}
+    DefaultReSizAble = {0: [True, True], 1: [True, True]}
     CurrentIndex = Notebook.index(Notebook.select())
 
     Toplevel.minsize(DefaultMinSize[CurrentIndex][0], DefaultMinSize[CurrentIndex][1])
