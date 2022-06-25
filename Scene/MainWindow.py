@@ -50,7 +50,8 @@ def RefreshTime():
     
     
     if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[0]) :
-        Tstr0.set(TimeElapseString(CurrentTrainElapsedUP) + "\n(막차)")
+        LastDestination1 = csvread.GetDestination(week=HolidaySelection, direction="상", station = StationSelection)
+        Tstr0.set(f'{TimeElapseString(CurrentTrainElapsedUP)} \n({LastDestination1}행)')
         TLabelTOPU0.configure(fg="red")
         TLabelTOPD0.configure(fg="red")
         
@@ -60,7 +61,8 @@ def RefreshTime():
         TLabelTOPD0.configure(fg="black")
 
     if csvread.isLastTrain(direction="상", station=StationSelection, week=HolidaySelection, Time=TmpList[1]):
-        Tstr2.set(TimeElapseString(NextTrainElapsedUP) + "\n(막차)")
+        LastDestination2 = csvread.GetDestination(week=HolidaySelection, direction="상", station = StationSelection)
+        Tstr2.set(f'{TimeElapseString(NextTrainElapsedUP)} \n({LastDestination2}행)')
         TLabelTOPU1.configure(fg="red")
         TLabelTOPD1.configure(fg="red")
         
@@ -75,7 +77,8 @@ def RefreshTime():
     
 
     if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[0]):
-        Tstr4.set(TimeElapseString(CurrentTrainElapsedDOWN) + "\n(막차)")
+        LastDestination3 = csvread.GetDestination(week=HolidaySelection, direction="하", station = StationSelection)
+        Tstr4.set(f'{TimeElapseString(CurrentTrainElapsedDOWN)} \n({LastDestination3}행)')
         TLabelBOTU0.configure(fg="red")
         TLabelBOTD0.configure(fg="red")
     else:
@@ -83,8 +86,9 @@ def RefreshTime():
         TLabelBOTU0.configure(fg="black")
         TLabelBOTD0.configure(fg="black")
 
-    if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[1]):        
-        Tstr6.set(TimeElapseString(NextTrainElapsedDOWN) + "\n(막차)")
+    if csvread.isLastTrain(direction="하", station=StationSelection, week=HolidaySelection, Time=TmpList2[1]):
+        LastDestination4 = csvread.GetDestination(week=HolidaySelection, direction="하", station = StationSelection)
+        Tstr6.set(f'{TimeElapseString(NextTrainElapsedDOWN)} \n({LastDestination4}행)')        
         TLabelBOTU1.configure(fg="red")
         TLabelBOTD1.configure(fg="red")
     else:
@@ -192,7 +196,7 @@ def ToggleLabelVisibility():
 
 def StartUpMain():
     '''
-    메인 화면의 새로고침 및 메뉴를 작동시키기 위한 함수입니다.
+    초기 시작 시 메인 화면의 새로고침 및 메뉴를 작동시키기 위한 함수입니다.
     휴일 설정, 역사 남은 시간을 계산하는 함수와 메인창을 업데이트하기 위한 함수를 실행합니다.
     '''
     AutoGetServiceDay()
@@ -296,7 +300,7 @@ menubar.add_command(label="?", command = lambda: HelpWindow.HelpOpen(MasterWindo
 win.config(menu=menubar)
 
 ###메인 프레임 구성
-MFrame = tk.LabelFrame(master = win, labelanchor="n", text=f'{StationSelection} / {HolidaySelection}')
+MFrame = tk.LabelFrame(master = win, labelanchor="n", text=f'{StationSelection} / {HolidaySelection}',cursor="hand2")
 MFrame.pack(fill=tk.BOTH, expand=True)
 
 ###서브 프레임 구성

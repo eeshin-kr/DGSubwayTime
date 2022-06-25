@@ -18,8 +18,14 @@ def CheckUpdate(Line):
     elif UpdateCheck :
         if tkinter.messagebox.askyesno(title="열차 시간표 알리미", message=f'''{Line}호선 시간표 업데이트가 존재합니다. 다운로드 하시겠습니까?
  현재 버전: {UpdateCheck[0]} 최신 버전: {UpdateCheck[1]}'''):
-            DownloadSchedule.DownloadFromJson(Line)
-            LoadCSV(Line)
+            TryDownload = DownloadSchedule.DownloadFromJson(Line)
+            if TryDownload != 0 :
+                tkinter.messagebox.showerror(title="다운로드 오류 발생", message=TryDownload + "\n저장된 정보로 읽습니다.")
+                LoadCSV(Line)
+            else:
+                tkinter.messagebox.showinfo(title="다운로드 완료", message="업데이트가 완료되었습니다.")
+                LoadCSV(Line)
+            
 def LoadCSV(Line):
     ###CSV 파일 불러와서 timetable_list 변수에 저장
     global timetable_list
@@ -30,7 +36,10 @@ def LoadCSV(Line):
             timetable_list = list(csv.reader(timetable_csv))
     except FileNotFoundError:
         if tkinter.messagebox.askyesno(title="열차 시간표 알리미", message=f'{Line}호선 시간표 파일을 찾을 수 없습니다. 다운로드 하시겠습니까?', icon = 'warning'):
-            DownloadSchedule.DownloadFromJson(Line)
+            TryDownload = DownloadSchedule.DownloadFromJson(Line)
+            if TryDownload != 0:
+                tkinter.messagebox.showerror(title="다운로드 오류 발생", message=TryDownload)
+                return -1
             CSVFileName = SettingsManager.DatabaseFileNameLoad(Line)
         with open(CSVFileName, 'r', encoding='euc-kr') as timetable_csv: 
             timetable_list = list(csv.reader(timetable_csv))
@@ -223,11 +232,60 @@ def GetTimeTable2 (week="평일", direction="상", adtype="도착"):
     return TrainNumDict
 
 def isLastTrain(week="평일",direction="상", station="용산", adtype="도착", Time=None):
-    
+    '''
+    막차인지 확인하기 위한 함수입니다.
+    '''
     if TimeTableSearchT(week, direction, station, adtype, SearchTime = Time, FillFirst=False) == None:
         return True
     else:
         return False
+
+def GetDestination(week="평일", direction="상", station="용산", adtype="도착"):
+
+    StationList = GetStationList()
+    StationIndex = StationList.index(station)
+    TrainDict = GetTimeTable2(week=week, direction=direction, adtype=adtype)
+    LastTrainNum = 0
+    LastTrainTime = "05:00:00"
+    LastTrainTime2 = "05:00:00"
+    Destination = ""
+    
+    for (Num,Time) in TrainDict.items():
+        
+        if Time[StationIndex] != None :
+            StationTimeList = Time[StationIndex].split(":")
+            if int(StationTimeList[0]) < 4 : ##4시 이전에는 24시간을 추가로 가산
+                StationTimeList[0] = str(int(StationTimeList[0]) + 24)
+                
+            LastTrainTimeList = LastTrainTime.split(":")
+            if int(LastTrainTimeList[0]) < 4 : ##4시 이전에는 24시간을 추가로 가산
+                LastTrainTimeList[0] = str(int(LastTrainTimeList[0]) + 24)
+            
+            
+            if tstrlist2int(StationTimeList) >= tstrlist2int(LastTrainTimeList) :
+                
+                LastTrainTime = Time[StationIndex]
+                LastTrainNum = Num
+                        
+    for ArriveInfo in TrainDict[LastTrainNum] :
+
+        if ArriveInfo != None :
+            ArriveTimeList = ArriveInfo.split(":")
+            if int(ArriveTimeList[0]) < 4 : ##4시 이전에는 24시간을 추가로 가산
+                ArriveTimeList[0] = str(int(ArriveTimeList[0]) + 24)
+                
+            LastTrainTime2List = LastTrainTime2.split(":")
+            if int(LastTrainTime2List[0]) < 4 : ##4시 이전에는 24시간을 추가로 가산
+                LastTrainTime2List[0] = str(int(LastTrainTime2List[0]) + 24)
+            
+
+            if tstrlist2int(ArriveTimeList) >= tstrlist2int(LastTrainTime2List) :
+                LastTrainTime2 = ArriveInfo
+
+    Destination =  StationList[ TrainDict[LastTrainNum].index(LastTrainTime2) ]
+
+    return Destination
+
        
 def GetHolidayOptionList(): ##추후 휴일 옵션 항목 가져오는 함수 만들 예정
     pass
@@ -237,6 +295,5 @@ def ChangeLine(Line):
     호선이 바뀌었을 때 CSV파일을 다시 불러오기 위한 함수입니다.
     '''
     LoadCSV(Line)
-    #CheckUpdate(Line)
+    #CheckUpdate(Line) ##호선이 바뀌었을 때 업데이트 확인은 속도 문제로 제거
 
-    
