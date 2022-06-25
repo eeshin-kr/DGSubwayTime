@@ -5,7 +5,7 @@
 
 메인 창
 
-![Annotation 2022-06-23 171346](https://user-images.githubusercontent.com/60684821/175250544-1f9450c9-d587-4cfe-b80d-0bc9d6da9cde.jpg)
+![Annotation 2022-06-25 232029](https://user-images.githubusercontent.com/60684821/175766055-32a82d2f-176a-4d2d-ba28-2474a293a64a.jpg)
 
 
 시간표 창
