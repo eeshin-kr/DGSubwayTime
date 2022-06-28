@@ -25,6 +25,7 @@ def RefreshTime():
     '''
     지정된 시간 마다 선택된 역의 이번 열차와 다음 열차의 시간을 가져오고 현재 시간과 비교하는 함수입니다.
     '''
+    global RefreshTimeVal #win.after_close를 이용해 RefreshTime을 다른 함수에서 끌 수 있게 하게 위한 전역변수
     TmpList = csvread.TimeTableSearch(direction="상", station=StationSelection, week=HolidaySelection)
     TmpList2 = csvread.TimeTableSearch(direction="하",  station=StationSelection, week=HolidaySelection)
     
@@ -100,7 +101,7 @@ def RefreshTime():
     
 
     UpdateFrameLabel() #라벨 업데이트 포함
-    win.after(1000, RefreshTime)
+    RefreshTimeVal = win.after(1000, RefreshTime)
 
 def AutoGetServiceDay():
     '''
@@ -117,7 +118,6 @@ def AutoGetServiceDay():
     else :
         print("네이버 지도로 부터 올바른 휴일 정보를 받지 못하였습니다." + todayServiceStr)
 
-    # 다시 실행 구문 시험하지는 않음
     # 지금 시각과 24:00 사이의 초를 계산, 그 후 지정된 시간 만큼 초 더한 뒤 Millsec으로 변환
     NextLaunchTime = (csvread.TimeDiffInt("24:00:00")+NextHolidayGetHour*3600) * 1000
     win.after(NextLaunchTime, AutoGetServiceDay)
@@ -145,6 +145,7 @@ def ChangeLine(LineInt):
     StationList = csvread.GetStationList()
     StationSelection = StationList[7]
     UpdateStationMenu()
+    RestartRefresh()
     
 
 def ChangeStation(StationStr):
@@ -153,13 +154,16 @@ def ChangeStation(StationStr):
     '''
     global StationSelection
     StationSelection = StationStr
-
+    RestartRefresh()
+    
+    
 def ChangeHoliday(HolidayStr):
     '''
     메뉴를 통해 휴일 여부를 바꾸었을때 동작하는 함수입니다.
     '''
     global HolidaySelection
     HolidaySelection = HolidayStr
+    RestartRefresh()
     
 def UpdateFrameLabel():
     '''
@@ -182,6 +186,9 @@ def UpdateStationMenu():
     StationRadioOption.set(StationSelection)    
 
 def ToggleLabelVisibility():
+    '''
+    도착 예정 시각 라벨 펼치기/접기 기능입니다.
+    '''
     if len(TFrameTOP0.pack_slaves()) > 1:
         TLabelTOPD0.pack_forget()
         TLabelTOPD1.pack_forget()
@@ -193,8 +200,16 @@ def ToggleLabelVisibility():
         TLabelBOTD0.pack()
         TLabelBOTD1.pack()
     
+def RestartRefresh():
+    '''
+    win.after을 통해 실행 대기 중인 RefreshTime함수를 제거 및 재시작하는 기능입니다.
+    메뉴에서 각종 설정을 바꾸었을 때 바로 반영되게 하기 위해 사용합니다.
+    '''
+    win.after_cancel(RefreshTimeVal)
+    RefreshTime()
+    
 
-def StartUpMain():
+def StartUpMain():    
     '''
     초기 시작 시 메인 화면의 새로고침 및 메뉴를 작동시키기 위한 함수입니다.
     휴일 설정, 역사 남은 시간을 계산하는 함수와 메인창을 업데이트하기 위한 함수를 실행합니다.
