@@ -10,8 +10,7 @@
 
 ### 시간표 창
 
-![Annotation 2022-06-21 181858](https://user-images.githubusercontent.com/60684821/174765431-6ad8fdf2-3fb9-4aa2-9192-52258a31a5f1.jpg)
-![Annotation 2022-06-21 181911](https://user-images.githubusercontent.com/60684821/174765435-0513943b-f2ba-411a-bdad-88ebacf487a8.jpg)
+![Merged_document](https://user-images.githubusercontent.com/60684821/176182021-124e5d6d-51e5-4fe7-99a4-c978110a1f99.png)
 
 
 ## 요구사항
