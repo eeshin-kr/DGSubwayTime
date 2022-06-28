@@ -3,12 +3,12 @@
 
 ## 프로그램 사진
 
-메인 창
+### 메인 창
 
 ![Annotation 2022-06-25 232145](https://user-images.githubusercontent.com/60684821/175766086-9dcb9db4-e59b-4d53-a55b-6ccb3a4719c1.png)
 
 
-시간표 창
+### 시간표 창
 
 ![Annotation 2022-06-21 181858](https://user-images.githubusercontent.com/60684821/174765431-6ad8fdf2-3fb9-4aa2-9192-52258a31a5f1.jpg)
 ![Annotation 2022-06-21 181911](https://user-images.githubusercontent.com/60684821/174765435-0513943b-f2ba-411a-bdad-88ebacf487a8.jpg)
