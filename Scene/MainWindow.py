@@ -1,7 +1,6 @@
 '''
 메인 창을 나타내는 모듈입니다.
 '''
-import webbrowser
 import tkinter as tk
 from tkinter import ttk
 from Processing import csvread

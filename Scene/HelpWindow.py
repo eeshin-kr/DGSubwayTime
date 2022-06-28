@@ -1,6 +1,7 @@
 import time
 import asyncio
 import tkinter as tk
+import webbrowser
 from Processing import todayService
 from Processing import DownloadSchedule
 from Processing import SettingsManager
@@ -58,10 +59,12 @@ def HelpOpen(event = None, MasterWindow = None, Line = None):
         
     Label5 = tk.Label(master=HFrame, text=UpdateVal)
     Label5.pack()
-    Label6 = tk.Label(master=HFrame, text="시간표 출처(우클릭으로 열기): https://www.data.go.kr/data/3033376/fileData.do", fg="blue", cursor="hand2")
+    Label6 = tk.Label(master=HFrame, text="시간표 출처: www.data.go.kr", fg="blue", cursor="hand2")
     Label6.pack()
-    Label6.bind("<Button-3>", lambda e: webbrowser.open_new("https://www.data.go.kr/data/3033376/fileData.do"))
-    top.bind("<Button-1>",lambda e: top.destroy())
+
+    Label6.bind("<Button-1>", lambda e: webbrowser.open_new("www.data.go.kr"))
+
+    #top.bind("<Button-1>",lambda e: top.destroy())
 
     top.mainloop()
 
